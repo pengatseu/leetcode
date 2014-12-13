@@ -1,0 +1,49 @@
+Given a linked list and a value x, partition it such that all nodes less than x come before nodes greater than or equal to x.
+
+You should preserve the original relative order of the nodes in each of the two partitions.
+
+For example,
+Given 1->4->3->2->5->2 and x = 3,
+return 1->2->2->4->3->5.
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *partition(ListNode *head, int x) {
+        vector<ListNode*> less_nodes; //创建vector存储小于给定值的listnode节点的指针
+        ListNode *new_head = (ListNode*)malloc(sizeof(ListNode)); //创建头节点（因为这边没有头结点）
+        new_head->next = head; 使头结点连接到链表
+        ListNode *next_node = new_head;
+        while(next_node->next != NULL) 下一个节点没有指向空
+        {
+            ListNode *p = next_node->next;
+            if(p->val < x)
+            {
+                less_nodes.push_back(p);
+                next_node->next = p->next;
+            }
+            else
+            {
+                next_node = next_node->next;
+            }
+        }
+        int i = 0;
+        ListNode *j = new_head;
+        while (i != less_nodes.size()) //将vector中的节点插入进删除这些节点的链表中
+        {
+            less_nodes[i]->next = j->next;
+            j->next = less_nodes[i];
+            j = less_nodes[i];
+            i++;
+        }
+        return new_head->next;
+    }
+};
