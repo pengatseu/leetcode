@@ -1,0 +1,57 @@
+Given a binary tree containing digits from 0-9 only, each root-to-leaf path could represent a number.
+
+An example is the root-to-leaf path 1->2->3 which represents the number 123.
+
+Find the total sum of all root-to-leaf numbers.
+
+For example,
+
+    1
+   / \
+  2   3
+The root-to-leaf path 1->2 represents the number 12.
+The root-to-leaf path 1->3 represents the number 13.
+
+Return the sum = 12 + 13 = 25.
+
+根据观察，返回的值的类型为int型，所以树的层数不可能超过10（若所有的值都为1，则层数为10的时候该二叉树相加为2^10-1）。
+***上面层数不超过10说的有点不严谨，因为这里的二叉树的取值还可能是0***
+
+
+本题通过递归来做，递归时主要就是考虑递归条件和结束条件。这里使用了DFS遍历（即深度优先搜索），
+可参考http://zh.wikipedia.org/wiki/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2。
+
+这里递归的东西是将之前的和乘以10加上当前节点值，注意左右子树都要递归，这样它们都会保存上面节点寻径的总和。
+递归结束条件是空节点和叶子节点。
+其本质上是先序遍历，只不过遍历的时候不是一般情况下的打印该节点上的值，而是将之前相加的值都保存着。
+时间复杂度是O(n)，空间是栈大小。
+关于本题的其他参考http://blog.csdn.net/kenden23/article/details/14100851
+http://blog.csdn.net/linhuanmars/article/details/22913699
+
+代码如下
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int sumNumbers(TreeNode *root) {
+        int sum = 0;
+        return dfs_sum(root,sum);
+    }
+private:
+    int dfs_sum(TreeNode *root, int sum)
+    {
+        if(root == NULL) return 0; //若为空节点，则返回0
+        if(root->left == NULL && root->right == NULL)
+            return sum*10+root->val; //若为叶子节点，则将前面的值乘以10后加上当前叶子的值返回，表明一条从根到叶子的路径结束了
+        return dfs_sum(root->left, sum*10+root->val)+dfs_sum(root->right, sum*10+root->val);
+        
+    }
+};
+
