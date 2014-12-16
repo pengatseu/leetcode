@@ -11,7 +11,7 @@ Given the below binary tree and sum = 22,
         7    2      1
 return true, as there exist a root-to-leaf path 5->4->11->2 which sum is 22.
 
-代码如下
+本题类似于Sum Root to Leaf Numbers，代码如下
 /**
  * Definition for binary tree
  * struct TreeNode {
@@ -35,14 +35,14 @@ public:
     return false;
     }
 private:
-    int find_all_path(TreeNode *r, int temp_sum, vector<int>& a)
+    int find_all_path(TreeNode *r, int temp_sum, vector<int>& a) //返回值类型仍要为int型，因为此处是迭代
     {
         if(r == NULL) return 0;
         if(r->left == NULL && r->right == NULL)
         {
             a.push_back(temp_sum+r->val);
         
-            return 0;
+            return 0;//关键处，返回0
         }
         return find_all_path(r->left, temp_sum+r->val, a)+find_all_path(r->right, temp_sum+r->val, a);
     }
