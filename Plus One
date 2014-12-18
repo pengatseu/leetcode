@@ -1,0 +1,47 @@
+Given a non-negative number represented as an array of digits, plus one to the number.
+
+The digits are stored such that the most significant digit is at the head of the list.
+
+//代码如下
+class Solution {
+public:
+    vector<int> plusOne(vector<int> &digits) {
+    int j; //保存进位
+    bool first = true;//设定第一次进行加1；后面加进位j
+    vector<int> c;
+    for(vector<int>::reverse_iterator i = digits.rbegin(); i != digits.rend(); i++)
+    {
+        if(first)  //第一次与1相加
+        {
+            if((*i+1) >= 10)
+            {
+                j = 1;
+                c.push_back((*i+1) - 10);
+            }
+            else
+            {
+                j = 0;
+                c.push_back((*i+1));
+            }
+            first = false; //从第二次开始与进位j相加
+        }
+        else
+        {
+            if((*i+j) >= 10)
+            {
+                
+                c.insert(c.begin(),(*i+j) - 10);  //注意首先插入相加后的数再将j重新赋值，不要颠倒次序，否则出错
+                j = 1;
+            }
+            else
+            {
+                c.insert(c.begin(),(*i+j));
+                j = 0;
+            }
+        }
+    }
+    if(j == 1)
+    c.insert(c.begin(),1);
+    return c;
+    }
+};
