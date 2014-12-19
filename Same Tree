@@ -1,0 +1,45 @@
+Given two binary trees, write a function to check if they are equal or not.
+
+Two binary trees are considered equal if they are structurally identical and the nodes have the same value.
+//本题有两种思路
+1、按照正常的方法一个一个的节点对比，用一次遍历，并在该遍历的时候对比各个子节点
+2、前序遍历和中序遍历的结果可以确定一个树。我们可以先分别前序遍历这两个树，将输出的结果存到vector中，再对比对应的值，
+然后再分别中序遍历这两个树，将输出的结果存到vector中，对比对应的值。当这两个结果都一样时，则这两棵树是一样的。
+
+下面代码是第一种方法
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isSameTree(TreeNode *p, TreeNode *q) {
+        bool a = true;
+        qianxu(p,q,a);
+        return a;
+    }
+private:
+    bool qianxu(TreeNode *p, TreeNode *q, bool &a)
+    {
+        if((p != NULL && q == NULL ) || (p == NULL && q != NULL ))
+            return a = a && false;
+        if(p && q)
+        {
+            if(p->val == q->val)
+            {
+                qianxu(p->left,q->left,a);
+                qianxu(p->right,q->right,a);
+                return a = a && true;
+            }
+            else
+            {
+                return a = a && false;
+            }
+        }
+    }
+};
