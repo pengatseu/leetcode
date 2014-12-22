@@ -1,0 +1,47 @@
+Sort a linked list using insertion sort.
+
+本题主要是对链表进行插入排序，与数组中的插入排序有点不同。
+数组的插入排序参考http://zh.wikipedia.org/wiki/%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F
+
+做这种类型的题目记得多画图看看。
+由于该题中的链表是单向的，且无头结点。本题较好的解法是提前给它加个头结点，这样比较方便在第一个节点前插入节点。
+另外本题需要注意的是链表的单方向性，所以不像在数组中找到需要插入的位置就行，这里找的是插入位置的前一个位置，这是由于链表的插
+入需要用到当前节点的前一个节点。
+另外需要注意主循环的代码不适用于链表为空的情况。
+
+代码如下：
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *insertionSortList(ListNode *head) {
+    if(head == NULL) return head;
+    ListNode *i,*j, *temp;
+    ListNode *new_head = new ListNode(0);  //头节点
+    new_head->next = head;
+
+    for(i = new_head->next; i->next != NULL;)  //结束的条件为需要排序的节点没有了
+    {
+        if(i->val <= i->next->val) //分情况，如果后面需要排序的数字比之前排序好的数字的最后一个（即最大的）还要大，那么就
+        {                          //向后移动一位到下一个需要排序的数字
+            i = i->next;               //向后移动一位到下一个需要排序的数字
+        }
+        else                    //否则由于当前需要排序的数字插入到已排序的链表中了，所以i->next自动指向下一个需要排序的数字，
+        {                       //此时就不需要手动移位了。
+            temp = i->next;          //38-40 行表示将需要排序的数字从当前链表拿出，并使i指向下一个需要排序的节点
+            i->next = temp->next;
+            temp->next = NULL;
+            for(j = new_head; j->next != i->next && (j->next->val <= temp->val); j = j->next);
+            temp->next = j->next;
+            j->next = temp;    
+        }
+    }
+    return new_head->next; //这里一定不要写成 return head，因为head指向的第一个节点前面可能插入比它小的其他节点。
+    }
+};
