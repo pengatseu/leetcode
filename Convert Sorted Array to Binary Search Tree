@@ -1,0 +1,35 @@
+Given an array where elements are sorted in ascending order, convert it to a height balanced BST.
+
+除了用AVL自平衡二叉查找树之外，本题由于数组已经排序好了，所以使用二分法更方便。（主要是给定的节点数据结构中没有高度元素）
+
+代码如下：
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode *sortedArrayToBST(vector<int> &num) {
+        TreeNode *tree = NULL;
+        binary_split(0,num.size()-1,tree,num);
+        return tree;
+    }
+private:
+    void binary_split(int low, int height, TreeNode *&t, vector<int> &num)
+    { 
+        
+        if(low > height)    //不管在左边还是右边，只要有这个条件说明low-height中已经没有元素了
+        {
+            return;  
+        }
+        int mid = (int)(low+height)/2; //由于mid可能为负值，所以本题mid最好为int型（例如上次递归时low=height=0，则mid-1=-1）
+        t = new TreeNode(num[mid]);    
+        binary_split(low,mid-1,t->left,num);   //注意此时height为mid-1了
+        binary_split(mid+1,height,t->right,num);
+    }
+};
