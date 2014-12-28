@@ -6,6 +6,9 @@ You are given a target value to search. If found in the array return its index, 
 
 You may assume no duplicate exists in the array.
 
+本题注意不要使用顺序查找法，其时间消耗的比较大。另外本题由于数组旋转后无序，所以不能用普通的二分法处理。
+不能比较的时候光比较一个范围，需要将target与上下范围都比较。如：target>A[m] && target<=A[r]
+
 更好的代码参考http://blog.csdn.net/linhuanmars/article/details/20525681
 我的代码如下：
 class Solution {
