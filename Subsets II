@@ -15,6 +15,7 @@ If S = [1,2,2], a solution is:
   []
 ]
 
+仍然可以参考http://www.cnblogs.com/TenosDoIt/p/3451902.html（往下翻就会有Subsets II）
 本题的大体思路与subset题相似，只不过采用的是二进制法解决该题（注意二进制法对数组中个数有限制，不过本题设计者没有刁难我们）。
 最后利用容器的泛型算法unique对得到的结果处理（记得使用unique函数时要先对容器内的数据排序），再使用容器的erase操作。
 
