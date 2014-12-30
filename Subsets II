@@ -1,0 +1,47 @@
+Given a collection of integers that might contain duplicates, S, return all possible subsets.
+
+Note:
+Elements in a subset must be in non-descending order.
+The solution set must not contain duplicate subsets.
+For example,
+If S = [1,2,2], a solution is:
+
+[
+  [2],
+  [1],
+  [1,2,2],
+  [2,2],
+  [1,2],
+  []
+]
+
+本题的大体思路与subset题相似，只不过采用的是二进制法解决该题（注意二进制法对数组中个数有限制，不过本题设计者没有刁难我们）。
+最后利用容器的泛型算法unique对得到的结果处理（记得使用unique函数时要先对容器内的数据排序），再使用容器的erase操作。
+
+本题代码如下：
+class Solution {
+public:
+    vector<vector<int> > subsetsWithDup(vector<int> &S) {
+    sort(S.begin(),S.end());
+    vector<vector<int> > result;
+    vector<int> node;
+    int length = S.size(), cur_bit = 0;
+    int max_bit = 1 << length;
+    for(int i = 0; i < max_bit; i++)
+    {
+        cur_bit = i;
+        node.clear();
+        for(int j = 0; j < length; j++)
+        {
+            if(1 & cur_bit) 
+                node.push_back(S[j]);
+            cur_bit >>= 1;
+        }
+        result.push_back(node);
+    }
+    sort(result.begin(),result.end());
+    vector<vector<int> >::iterator a = unique(result.begin(),result.end());
+    result.erase(a, result.end());
+    return result;
+    }
+};
