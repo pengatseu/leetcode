@@ -37,4 +37,34 @@ private:
             preorder(result, root->left);
             preorder(result, root->right);
         }
-   
+另外本题设计这要求使用迭代的方法解决该问题，可以通过栈来迭代处理。
+这种思路可以参考http://zh.wikipedia.org/wiki/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2中的实现代码
+本题采用迭代的代码如下：
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> preorderTraversal(TreeNode *root) {
+        vector<int> result;
+        stack<TreeNode*> a;
+        if(root)  a.push(root);  //考虑root为空的情况
+        while(!a.empty())
+        {
+            TreeNode *temp = a.top();  //保存栈顶值
+            a.pop();
+            result.push_back(temp->val);
+            if(temp->right != NULL)   //当为空时不再压入
+                a.push(temp->right);
+            if(temp->left != NULL)   //当为空时不再压入
+                a.push(temp->left);
+        }
+        return result;
+    }
+};
