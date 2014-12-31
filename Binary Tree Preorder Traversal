@@ -55,7 +55,7 @@ public:
         vector<int> result;
         stack<TreeNode*> a;
         if(root)  a.push(root);  //考虑root为空的情况
-        while(!a.empty())
+        while(!a.empty())  //由于已经保存，弹出栈顶值
         {
             TreeNode *temp = a.top();  //保存栈顶值
             a.pop();
