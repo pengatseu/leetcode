@@ -6,7 +6,7 @@ Return [1,3,3,1].
 Note:
 Could you optimize your algorithm to use only O(k) extra space?
 
-本题主要思路是用一个额外额的空间用来保存上一行的值
+本题主要思路是用一个额外额的空间用来保存上一行的值，更方便建议的方法参考PDF上的解答
 代码如下：
 class Solution {
 public:
