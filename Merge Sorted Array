@@ -44,7 +44,7 @@ private:
     }
 };
 
-另外本题还可以模仿插入排序法解决本题，代码如下
+另外本题还可以模仿插入排序法解决本题，代码如下,测试下来耗时更多
 class Solution {
 public:
     void merge(int A[], int m, int B[], int n) {
