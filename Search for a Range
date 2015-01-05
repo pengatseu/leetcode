@@ -1,0 +1,72 @@
+Given a sorted array of integers, find the starting and ending position of a given target value.
+
+Your algorithm's runtime complexity must be in the order of O(log n).
+
+If the target is not found in the array, return [-1, -1].
+
+For example,
+Given [5, 7, 7, 8, 8, 10] and target value 8,
+return [3, 4].
+
+本题思路：先采用二分法找出target，然后分别在low——taregt和target——height范围内利用二分法寻找其余存在的target。最后low和target
+保存的范围就是target的范围。
+
+本题代码如下：
+class Solution {
+public:
+    vector<int> searchRange(int A[], int n, int target) {
+    vector<int> result;
+    int low = 0;
+    int height = n-1;
+    int mid, mid_copy;  //mid_copy用来赋值mid里面的值
+    while(low <= height)  //注意不满足的条件为low>height
+    {
+        mid = (low+height)/2;
+        if(target > A[mid])
+        {
+            low = mid+1;          
+        }
+        else if(target < A[mid])
+        {
+            height = mid-1;
+        }
+        else
+            break;
+    }
+    if(low > height)
+    {
+        return vector<int>(2,-1); //不存在目标值，返回[-1.-1]
+    }
+    else
+    {
+        mid_copy = mid;
+        while(low <= mid) //二分法在low——taregt寻找其他存在的target
+        {
+            int mid_left = (low+mid)/2;
+            if(target > A[mid_left])
+            {
+                low = mid_left+1;
+            }
+            else   //如果找到target，让上界mid向下移动，继续寻找存在的target
+            {
+                mid = mid_left-1;
+            }
+        }
+        while(height >= mid_copy)  //二分法在target——height寻找其他存在的target
+        {
+            int mid_right = (height+mid_copy)/2;
+            if(target < A[mid_right])
+            {
+                height = mid_right-1;
+            }
+            else  //如果找到target，让上界mid_copy向上移动，继续寻找存在的target
+            {
+                mid_copy = mid_right+1;
+            }
+        }
+        result.push_back(low);
+        result.push_back(height);
+        return result;
+    }
+    }
+};
