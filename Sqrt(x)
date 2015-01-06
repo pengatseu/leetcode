@@ -1,0 +1,17 @@
+Implement int sqrt(int x).
+
+Compute and return the square root of x.
+
+本题采用牛顿迭代法，具体思路可参考http://www.cnblogs.com/pkuoliver/archive/2010/10/06/sotry-about-sqrt.html。
+
+代码如下
+class Solution {
+public:
+    int sqrt(int x) {
+        if(x < 0) return -1;
+        double answer = 65535;  //设定一个起始位置
+        while((answer*answer - x) > 0.001)  //利用牛顿迭代法不断迭代
+            answer = (answer + (x/answer))/2;  
+        return answer; 
+    }
+};
