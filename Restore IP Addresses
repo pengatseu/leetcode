@@ -1,0 +1,71 @@
+Given a string containing only digits, restore it by returning all possible valid IP address combinations.
+
+For example:
+Given "25525511135",
+
+return ["255.255.11.135", "255.255.111.35"]. (Order does not matter)
+
+本题的思路如下：根据给定string的长度，选择4个1-3的数字组合，使其相加等于string的长度。（这里使用的暴力破解法）
+然后将这些数字组合存储在容器中。然后按照这些数字组合将string分开。判段是否在0-255的范围内，并且要注意那些前面带有0的数字，
+如010,001,这些都不符合要求，要去除。
+
+本题代码如下
+class Solution {
+public:
+    vector<string> restoreIpAddresses(string s) {
+        vector<vector<int> > abcd = zhu_he(s.size());
+        vector<string> result;  //存储所有的数字组合
+        vector<int> abcd_temp; //用来提取出每个数字组合
+        for(int i = 0; i != abcd.size(); i++)
+        {
+            abcd_temp = abcd[i];   
+            string::iterator index_begin = s.begin(), index_end = s.begin() + abcd_temp[0]; //用来按照数字组合中的数字提取
+            string str_temp;                                                                //相应的字符串
+            bool zero = true;    //用来判断长度大于1的ip字符串的第一个字符是否为0
+            for(int j = 0; j != abcd_temp.size(); j++)
+            {
+                string zero_error = string(index_begin,index_end);
+                if(zero_error.size() > 1 && zero_error[0] == '0')
+                    zero = false; //如果满足条件，要赋值false
+                int ip_num = stoi(string(index_begin,index_end));    //将字符串转换为数字，方法参见下面地址
+                if(ip_num >=0 && ip_num <= 255 && zero)   //http://stackoverflow.com/questions/7663709/convert-string-to-int-c
+                {
+                    str_temp += string(index_begin,index_end);
+                    str_temp += ".";
+                    index_begin = index_end;   //指向下一个子字符串
+                    index_end += abcd_temp[j+1];   
+                }
+                else
+                {
+                    str_temp = ""; //清空str_temp，用来下面判断-
+                    continue;     //跳出本次循环
+                }
+            }
+            if(str_temp != "")
+            {
+                str_temp.pop_back();   //由于末尾多了一个“.”，所以要去除
+                result.push_back(str_temp);
+            }
+        }
+        return result;
+    }
+private:
+    vector<vector<int> > zhu_he(int target)
+    {
+        vector<vector<int> > result;  //暴力破解法求得数字组合
+        for(int a = 1; a <= 3; a++)
+            for(int b = 1; b <= 3; b++)
+                for(int c = 1; c <= 3; c++)
+                    for(int d = 1; d <= 3; d++)
+                        if((a+b+c+d) == target)
+                        {
+                            vector<int> e;
+                            e.push_back(a);
+                            e.push_back(b);
+                            e.push_back(c);
+                            e.push_back(d);
+                            result.push_back(e);
+                        }
+        return result;
+    }
+};
