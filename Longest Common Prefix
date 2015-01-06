@@ -1,0 +1,28 @@
+Write a function to find the longest common prefix string amongst an array of strings.
+
+本题的意思是要求我们在一堆string数组中寻找他们都有的最大的前缀。
+
+本题我的思路是先将这些string数组sort一下，这样只要比较第一个string和最后一个string就可以知道最大的前缀了，
+这是因为比较的是所有的string，如果之比较最前面两个，可能出现ab,ab,ac这样的情况。如果第一个string的第一个字符为a，最后一个
+string的第一个字符也为a，则中间所有string的第一个字符一定都为a。
+另外注意一些细节，如数组为空的情况
+
+本题代码如下：
+class Solution {
+public:
+    string longestCommonPrefix(vector<string> &strs) {
+        if(!strs.size()) return string(); //如果为空，返回空字符
+        if(strs.size() == 1) return strs[0]; //该行可以去掉，因为下面会对这种情况的a，b取一样的string
+        sort(strs.begin(),strs.end());
+        string a = strs[0], b = strs[strs.size()-1]; //a为数组第一个string，b为最后一个string
+        if(!a.size()) return string();
+        int result = 0;
+        while(result != a.size() && a[result] == b[result])  //比较时需要防止超过a的字符个数
+        {
+            result++;  //进行下一次比较
+        }
+        string answer(a.begin(),a.begin()+result);  //取这些字符
+        return answer;
+    }
+};
+
