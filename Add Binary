@@ -1,0 +1,50 @@
+Given two binary strings, return their sum (also a binary string).
+
+For example,
+a = "11"
+b = "1"
+Return "100".
+
+本题思路：按照正常二进制加法的思路相加，注意之前先将a和b对齐，不齐的地方添0，另外设置一个变量用来保存进位。
+还需要注意的是char怎样转化为int
+
+代码如下
+class Solution {
+public:
+    string addBinary(string a, string b) {
+        string result;
+        int j = 0; //保存进位
+        int length = a.size();    //17-18行比较a和b哪个长度比较大，并保存在length里面
+        if(a.size() < b.size()) length = b.size();
+        a.insert(a.begin(),length-a.size(),'0'); //19-20行表示对齐a和b的长度，不足的加0.
+        b.insert(b.begin(),length-b.size(),'0'); 
+        for(int i = length-1; i >= 0; i--) //注意是从个位开始相加，即string的最后一个字符为个位，不要搞混了
+        {
+            int a_num = a[i] - '0'; //将char转化为int
+            int b_num = b[i] - '0';
+            int sum = a_num + b_num + j;
+            if((sum % 2) == 0)
+            {
+                result.insert(result.begin(), 1, '0');   //如果sum为2或0，插入‘0’
+                if(sum == 2)
+                {
+                    j = 1;
+                }
+                else
+                    j = 0;
+            }
+            else
+            {
+                result.insert(result.begin(), 1, '1');  //如果sum为1或3，插入‘1’
+                if(sum == 3)
+                {
+                    j = 1;
+                }
+                else
+                    j = 0;
+            }
+        }
+        if(j == 1) result.insert(result.begin(), 1, '1');  //最后检查是否还有进位
+        return result;
+    }
+};
