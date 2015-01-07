@@ -1,0 +1,64 @@
+Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.
+
+For example:
+Given the below binary tree and sum = 22,
+              5
+             / \
+            4   8
+           /   / \
+          11  13  4
+         /  \    / \
+        7    2  5   1
+return
+[
+   [5,4,11,2],
+   [5,8,4,5]
+]
+
+本题思路主要是将所有的root到leaf的路径都存储下来，然后看哪些路径符合条件。
+注意将使用递归将所有的root到leaf的路径都存储下来，当每层结束的时候，才将最后的数pop出。
+
+代码如下：
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int> > pathSum(TreeNode *root, int sum) {
+        vector<vector<int> > all_path_result, result;
+        vector<int> path_temp;
+        int sum1;
+        all_path(root, path_temp, all_path_result);
+        for(int i = 0; i != all_path_result.size(); i++)
+        {
+            path_temp = all_path_result[i];
+            sum1 = 0;
+            for(int j = 0; j != path_temp.size(); j++)
+            {
+                sum1 += path_temp[j];
+            }
+            if(sum1 == sum) result.push_back(path_temp);
+        }
+        return result;
+    }
+private:
+    void all_path(TreeNode *root, vector<int> &path_temp, vector<vector<int> > &result)
+    {
+        if(root == NULL) return;  //递归停止的条件
+        path_temp.push_back(root->val);
+        if(root->left == NULL && root->right == NULL)  //当为叶子节点的时候，要存储到容器中
+        {
+            result.push_back(path_temp);  //注意这里不要返回，即后面不要跟return；
+        }
+        all_path(root->left, path_temp, result);
+        all_path(root->right, path_temp, result);
+                                                            //该层结束的时候，才pop最后的数字
+        path_temp.pop_back();  //注意使用pop_back的时候不需要实参，不能写成pop_back（root->val）
+    }
+};
