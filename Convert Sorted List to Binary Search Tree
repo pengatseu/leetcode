@@ -1,0 +1,50 @@
+Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.
+
+本题与Convert Sorted Array to Binary Search Tree相似，可以使用其相同的思路，但是由于链表存取的不方便，因此较繁琐。
+由于二叉查找树的中序遍历就是一个升序的数组。我们可以在中序遍历的同时按顺序将链表中的数字放如入节点中，此方法为自底向上的方法。
+可参考http://blog.csdn.net/worldwindjp/article/details/39722643和PDF
+
+代码如下
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode *sortedListToBST(ListNode *head) {
+        int len = 0;
+        ListNode *p = head;  //切记要存储下head当前的指向，因为下面head的指向变化了，此时再用head做实参就不正确了
+        while(head) 
+        {
+            len++;
+            head = head->next;
+        }
+        return create_tree(p, 0, len-1);
+    }
+private:
+    TreeNode *create_tree(ListNode *&cur, int left, int right)
+    {
+        if(left > right) return NULL;
+        int mid = (left+right)/2;
+        TreeNode *le = create_tree(cur, left, mid-1);
+        TreeNode *parent = new TreeNode(cur->val);
+        parent->left = le;
+        cur = cur->next;
+        parent->right = create_tree(cur, mid+1, right);
+        return parent;
+    }
+};
