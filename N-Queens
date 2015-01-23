@@ -1,0 +1,82 @@
+The n-queens puzzle is the problem of placing n queens on an n×n chessboard such that no two queens attack each other.
+
+
+
+Given an integer n, return all distinct solutions to the n-queens puzzle.
+
+Each solution contains a distinct board configuration of the n-queens' placement, where 'Q' and '.' both indicate a queen and an empty space respectively.
+
+For example,
+There exist two distinct solutions to the 4-queens puzzle:
+
+[
+ [".Q..",  // Solution 1
+  "...Q",
+  "Q...",
+  "..Q."],
+
+ ["..Q.",  // Solution 2
+  "Q...",
+  "...Q",
+  ".Q.."]
+]
+
+本题参考http://blog.csdn.net/linhuanmars/article/details/20667175
+分析：这道题实现的方法是一个非常典型的套路，有许多题都会用到。
+这个问题是典型的NP问题，所以在时间复杂度上就不用纠结了，肯定是指数量级的。
+主要思想就是一句话：用一个循环递归处理子问题。这个问题中，在每一层递归函数中，我们用一个循环把一个皇后填入对应行的某一列中，
+如果当前棋盘合法，我们就递归处理这一行，找到正确的棋盘我们就存储到结果集里面。
+这道题最后一个细节就是怎么实现检查当前棋盘合法性的问题，因为除了刚加进来的那个皇后，前面都是合法的，
+我们只需要检查当前行和前面行是否冲突即可。检查是否同列很简单，检查对角线就是行的差和列的差的绝对值不要相等就可以。
+
+代码如下：
+class Solution {
+public:
+    vector<vector<string> > solveNQueens(int n) {
+        vector<vector<string> > result; 
+        vector<int> row_num;
+        np_stack(result, row_num, 0, n);
+        return result;
+    }
+private:
+    void np_stack(vector<vector<string> > &result, vector<int> &row_num, int row, int n)
+    {
+        if(row == n)
+        {
+            vector<string> res_temp;
+            for(int i = 0; i < n; i++)
+            {
+                string every_line(n, '.'); //注意每行字符数是变量，由n确定
+                for(int j = 0; j < n; j++)
+                {
+                    if(row_num[i] == j)
+                    {
+                        every_line[j] = 'Q';
+                    }
+                }
+                res_temp.push_back(every_line);
+            }
+            result.push_back(res_temp);
+            return;
+        }
+        for(int k = 0; k < n; k++)
+        {
+            row_num.push_back(k);
+            if(check(row, row_num))
+            {
+                np_stack(result, row_num, row+1, n);   
+            }
+            row_num.pop_back();  //注意pop_back()不要参数
+        }
+    }
+    bool check(int t, const vector<int> &row_num)
+    {
+        for(int i = 0; i < t; i++)
+        {
+            if(row_num[i] == row_num[t] || abs(row_num[i] - row_num[t]) == abs(i - t)) //要注意检查对角线，
+                                                                                  // 就是行的差和列的差的绝对值不要相等
+                return false;
+        }
+        return true;
+    }
+};
