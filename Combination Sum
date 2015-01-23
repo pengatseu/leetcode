@@ -1,0 +1,101 @@
+Given a set of candidate numbers (C) and a target number (T), find all unique combinations in C where the candidate numbers 
+sums to T.
+
+The same repeated number may be chosen from C unlimited number of times.
+
+Note:
+All numbers (including target) will be positive integers.
+Elements in a combination (a1, a2, … , ak) must be in non-descending order. (ie, a1 ≤ a2 ≤ … ≤ ak).
+The solution set must not contain duplicate combinations.
+For example, given candidate set 2,3,6,7 and target 7, 
+A solution set is: 
+[7] 
+[2, 2, 3] 
+
+参考：http://blog.csdn.net/linhuanmars/article/details/20828631
+http://blog.sina.com.cn/s/blog_eb52001d0102v2ec.html
+
+思路：先对所给数组排序，然后每次递归中把剩下的元素一一加到结果集合中，并且把目标减去加入的元素，
+然后把剩下元素（包括当前加入的元素）放到下一层递归中解决子问题。
+可以看成是DFS问题。
+
+代码如下：
+class Solution {
+public:
+    vector<vector<int> > combinationSum(vector<int> &candidates, int target) {
+        sort(candidates.begin(), candidates.end());
+        vector<vector<int> > result;
+        vector<int> temp;
+        np_stack(result, temp, candidates, target);
+        for(int i = 0; i < result.size(); i++)
+        {
+            vector<int> &result_temp = result[i];
+            sort(result_temp.begin(), result_temp.end()); //在这里对result里面的每个容器序列进行排序，为后面删除重复元素做好准备
+        }
+        sort(result.begin(), result.end());   //删除前一定要对里面的容器进行排序，这样可以把相同的放在一起。（可以对vector排序）
+        vector<vector<int> >::iterator end_unique = unique(result.begin(), result.end());
+        result.erase(end_unique, result.end());
+        return result;
+    }
+private:
+    void np_stack(vector<vector<int> > &result, vector<int> &temp, vector<int> &candidates, int target)
+    {
+        if(target == 0)
+        {
+            result.push_back(temp);  //注意不要在这里对temp进行sort排序，因为排序后会打乱60行的出队的顺序，pop出了其他数值
+            return;
+        }
+        for(int i = 0; i < candidates.size(); i++)
+        {
+            temp.push_back(candidates[i]);
+            if((target - candidates[i]) >= 0)
+            {
+                np_stack(result, temp, candidates, target - candidates[i]);    
+            }
+            else
+            {
+                temp.pop_back();  //此处主要考虑数组中的数都是按序排好的，一旦有一个不满足(target - candidates[i])，
+                break;                  //后面更大的数肯定更不满足，所以直接break此循环
+            }
+            temp.pop_back();  //这里不能忘记，在每次结束后需要把之前数字pop出
+        }
+    }
+};
+
+上述的代码运行效率比较低，这是因为我们会回头选择小的数字，如可能会选到2,3,2或者3,2,2.这些需要避免。所以可以借助step记录
+我们选到了第几个值，并且一直往后选，这样可以避免选到重复的子集。这样也就不要对得到的结果删除重复结果了。
+
+改后代码如下：
+class Solution {
+public:
+    vector<vector<int> > combinationSum(vector<int> &candidates, int target) {
+        sort(candidates.begin(), candidates.end());
+        vector<vector<int> > result;
+        vector<int> temp;
+        np_stack(result, temp, candidates, target, 0); //不需要再对得到的结果删除重复元素了
+        return result;
+    }
+private:
+    void np_stack(vector<vector<int> > &result, vector<int> &temp, vector<int> &candidates, int target,int step)
+    {
+        if(target == 0)
+        {
+            result.push_back(temp);
+            return;
+        }
+        for(int i = step; i < candidates.size(); i++)  //i的开始值改变，防止走回头路
+        {
+            temp.push_back(candidates[i]);
+            if((target - candidates[i]) >= 0)
+            {
+                np_stack(result, temp, candidates, target - candidates[i], i);//每次从i开始循环，不再从0开始循环，避免往回选择数字 
+            }
+            else
+            {
+                temp.pop_back();
+                break;
+            }
+            temp.pop_back();
+        }
+    }
+};
