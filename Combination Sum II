@@ -1,0 +1,99 @@
+Given a collection of candidate numbers (C) and a target number (T), find all unique combinations in C where the 
+candidate numbers sums to T.
+
+Each number in C may only be used once in the combination.
+
+Note:
+All numbers (including target) will be positive integers.
+Elements in a combination (a1, a2, … , ak) must be in non-descending order. (ie, a1 ≤ a2 ≤ … ≤ ak).
+The solution set must not contain duplicate combinations.
+For example, given candidate set 10,1,2,7,6,1,5 and target 8, 
+A solution set is: 
+[1, 7] 
+[1, 2, 5] 
+[2, 6] 
+[1, 1, 6]
+
+参考：http://blog.csdn.net/linhuanmars/article/details/20829099
+
+本题思路：基本与Combination Sum的思路一致。下面的代码会出现如[1,1] 1 这样的特殊情况，所以需要对结果除去相同的答案。
+因此效率不高。
+
+代码如下：
+class Solution {
+public:
+    vector<vector<int> > combinationSum2(vector<int> &num, int target) {
+        sort(num.begin(), num.end());
+        vector<vector<int> > result;
+        vector<int> temp;
+        dfs_stack(result, temp, 0, num, target);
+        sort(result.begin(), result.end()); //先排序，后除去相同结果
+        result.erase(unique(result.begin(), result.end()), result.end()); //除去相同的结果
+        return result;
+    }
+private:
+    void dfs_stack(vector<vector<int> > &result, vector<int> &temp, int step, vector<int> &num, int target)
+    {
+        if(target == 0)
+        {
+            result.push_back(temp);
+            return;
+        }
+        for(int i = step; i < num.size(); i++)
+        {
+            temp.push_back(num[i]);
+            if((target - num[i]) >= 0)
+            {
+                dfs_stack(result, temp, i + 1, num, target - num[i]);   //每次从该元素的下一个元素开始。 
+            }
+            else
+            {
+                temp.pop_back();
+                break;
+            }
+            temp.pop_back();
+        }
+    }
+};
+
+针对上面效率不高的情况，我们可以通过判定数组中该元素是否与前一个元素相等来去除这种情况，这样就不需要在结果中再除去相同元素了。
+我们只对于第一次得到这个数进行递归，接下来就跳过这个元素了，因为接下来的情况会在上一层的递归函数被考虑到，
+这样就可以避免重复元素的出现。
+
+更改后代码如下;
+class Solution {
+public:
+    vector<vector<int> > combinationSum2(vector<int> &num, int target) {
+        sort(num.begin(), num.end());
+        vector<vector<int> > result;
+        vector<int> temp;
+        dfs_stack(result, temp, 0, num, target);
+       // sort(result.begin(), result.end());  //不需要这两行了，因为已经在下面排除容器中两元素相同的情况了
+       // result.erase(unique(result.begin(), result.end()), result.end());
+        return result;
+    }
+private:
+    void dfs_stack(vector<vector<int> > &result, vector<int> &temp, int step, vector<int> &num, int target)
+    {
+        if(target == 0)
+        {
+            result.push_back(temp);
+            return;
+        }
+        for(int i = step; i < num.size(); i++)
+        {
+            if(i > step && num[i] == num[i-1]) continue;  //只在第一次得到这个数进行递归，接下来就跳过与这个相同的元素
+            temp.push_back(num[i]);
+            if((target - num[i]) >= 0)
+            {
+                dfs_stack(result, temp, i + 1, num, target - num[i]);    
+            }
+            else
+            {
+                temp.pop_back();
+                break;
+            }
+            temp.pop_back();
+        }
+    }
+};
