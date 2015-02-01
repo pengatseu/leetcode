@@ -1,0 +1,80 @@
+Determine if a Sudoku is valid, according to: Sudoku Puzzles - The Rules.
+
+The Sudoku board could be partially filled, where empty cells are filled with the character '.'.
+
+
+A partially filled sudoku which is valid.
+
+Note:
+A valid Sudoku board (partially filled) is not necessarily solvable. Only the filled cells need to be validated.
+
+思路参考：http://blog.csdn.net/linhuanmars/article/details/20748171
+
+本题代码：
+class Solution {
+public:
+    bool isValidSudoku(vector<vector<char> > &board) {
+        set<int> temp;
+        int num;
+        for(int i = 0; i < 9; i++)
+        {
+            temp.clear();  //记得首次清空容器
+            for(int j = 0; j < 9; j++)
+            {
+                if(board[i][j] != '.')  //防止碰到'.'
+                {
+                    num = (int)(board[i][j] - '0');
+                    if(temp.count(num) == 0) //当set容器中没有该重复元素时
+                    {
+                        temp.insert(num);
+                    }
+                    else
+                    {
+                        return false;       
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < 9; i++)
+        {
+            temp.clear();
+            for(int j = 0; j < 9; j++)
+            {
+                if(board[j][i] != '.')
+                {
+                    num = (int)(board[j][i] - '0');
+                    if(temp.count(num) == 0)
+                    {
+                        temp.insert(num);
+                    }
+                    else
+                    {
+                        return false;       
+                    }
+                }
+            }
+        }
+        for(int block = 0; block < 9; block++)
+        {
+            temp.clear();
+            for(int i = block/3*3; i < block/3*3+3; i++)  //关键点
+                for(int j = block%3*3; j < block%3*3+3; j++)  //关键的
+                {
+                    if(board[i][j] != '.')
+                    {
+                        num = (int)(board[i][j] - '0');
+                        if(temp.count(num) == 0)
+                        {
+                            temp.insert(num);
+                        }
+                        else
+                        {
+                            return false;       
+                        }
+                    }
+                }
+        }
+        
+        return true;
+    }
+};
