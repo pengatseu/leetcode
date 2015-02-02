@@ -10,3 +10,80 @@ A sudoku puzzle...
 
 ...and its solution numbers marked in red.
 
+参考：http://blog.csdn.net/linhuanmars/article/details/20748761
+
+本题思路：
+这道题的方法就是用在N-Queens中介绍的常见套路。简单地说思路就是循环处理子问题，
+对于每个格子，带入不同的9个数，然后判合法，如果成立就递归继续，结束后把数字设回空。
+
+这道题判段合法可以参考Valid Sudoku的方法，但是由于这里初始状态一定有效，只要保证每次空格中放入的新数字符合条件，
+整体就仍然是个有效的数独，下一个数字再在前面的有效性之下重复前面的过程。
+
+这里与N-Queens不同的地方在于它只需要需找一组解就行，不需要将各个空格从1-9都计算一遍。而在N-Queens等问题是需要找出所有解，
+所以他们中途找到一组解不需要跳出，继续往下寻找下一个符合条件的解。所以本题的递归函数有bool返回值，用来判断是否找到一组符合
+的解，是的话就返回true跳出循环。
+
+本题代码如下：
+class Solution {
+public:
+    void solveSudoku(vector<vector<char> > &board) {
+        np_stack(board, 0, 0); 
+    }
+private:
+    bool np_stack(vector<vector<char> > &board, int i, int j)
+    {
+        if(j == 9)
+        {
+            return np_stack(board, i+1, 0);
+        }
+        if(i == 9)
+        {
+            return true;
+        }
+        if(board[i][j] == '.')
+        {
+            for(int k = 1; k <= 9; k++)
+            {
+                board[i][j] = (char)(k + '0');
+                if(isValid(board, i, j))
+                {
+                    if(np_stack(board, i, j+1))
+                        return true;  //一旦满足条件，跳出循环
+                }
+                board[i][j] = '.';  //这里是必须的，如果没有的话，当跳出该循环的时候，这个位置上仍保存之前的数字，会造成干扰
+            }
+        }
+        else
+        {
+            return np_stack(board, i, j+1);  //如果是数字，继续下一个位置。不需对这些已经存在的数字判断是否满足数独的条件
+                                            //需要的是对那些新的数字判断，只要新的满足，就一定满足数独的条件。
+        }
+        
+        return false;
+    }
+    
+    bool isValid(const vector<vector<char> > &board, int i, int j)  //判断新数字是否符合数独的条件
+    {
+        for(int a = 0; a < 9; a++)
+        {
+            if(board[i][a] == board[i][j] && a != j)
+                return false;
+        }
+        for(int a = 0; a < 9; a++)
+        {
+            if(board[a][j] == board[i][j] && a != i)
+                return false;
+        }
+        for(int a = (i/3*3); a < (i/3*3+3); a++)  //关键点a = (i/3*3)
+        {
+            for(int b = (j/3*3); b < (j/3*3+3); b++) //关键点b = (j/3*3)
+            {
+                if(board[a][b] == board[i][j] && a != i && b != j)
+                    return false;
+            }
+        }
+        
+        return true;
+    }
+};
+
