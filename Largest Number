@@ -1,0 +1,130 @@
+Given a list of non negative integers, arrange them such that they form the largest number.
+
+For example, given [3, 30, 34, 5, 9], the largest formed number is 9534330.
+
+Note: The result may be very large, so you need to return a string instead of an integer.
+
+本题思路：
+一开始我的思路是比较每个数字的每个位，然后按照大小排序，如果该位已经没有数字，则按照前一个数字进行比较。
+但是这样比较考虑的因素太多。所以代码也没写完。该代码如下：
+class Solution {
+public:
+    string largestNumber(vector<int> &num) {
+        vector<string> str_num;
+        string temp;
+        for(vector<int>::iterator i = num.begin(); i != num.end(); i++)
+        {
+            str_num.push_back(to_string(*i));
+        }
+        for(int i = 0; i < str_num.size(); i++)
+        {
+            int max = i;
+            for(int j = i+1; j < str_num.size(); j++)
+            {
+                if((int)(str_num[max][0] - '0') < (int)(str_num[j][0] - '0'))
+                {
+                    max = j;
+                }
+            }
+            if(max != i)
+            {
+                temp = str_num[i];
+                str_num[i] = str_num[max];
+                str_num[max] = temp;
+            }
+        }
+        for(int a = 1; a < 5; a++)
+        {
+            for(int b = 0; b < str_num.size(); b++)
+            {
+                if(str_num[b][a] != '')
+                {
+                    int max = b;
+                    for(int c = b+1; c < str_num.size(); c++)
+                    {
+                        if(str_num[max][a-1] == str_num[c][a-1])
+                        {
+                            if(str_num[c][a] != '')
+                            {   
+                                if((int)(str_num[max][a] - '0') < (int)(str_num[c][a] - '0'))
+                                max = c;
+                            }
+                            else
+                            {
+                                
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    if(max != b)
+                    {
+                        temp = str_num[b];
+                        str_num[b] = str_num[max];
+                        str_num[max] = temp;
+                    }
+                }
+            }
+        }
+        
+        for(int i = 0; i < str_num.size(); i++)
+        {
+            
+        }
+    }
+};
+
+新的思路：通过到网上查询后发现有更好的方案，那就是比较两个字符串s1和s2时，比较s1+s2和s2+s1，
+如果str(a) + str(b) > str(b) + str(a)，则a在b之前，否则b在a之前。本题就采用这样方法，结合插入排序法进行排序。
+将每个数字与已经排序好的数字按照上面的方法进行比较，如果该数字在前，则继续比较下去，知道不满足，则将该数字插入此处。
+将得到的排序好的数组输出后，需要特别考虑该数字串最前面可能有0的情况，需要将这些0消去。
+代码如下：
+class Solution {
+public:
+    string largestNumber(vector<int> &num) {
+        vector<string> str_num;
+        string temp, result;
+        int j;
+        for(vector<int>::iterator i = num.begin(); i != num.end(); i++)
+        {
+            str_num.push_back(to_string(*i)); // 将int全部转换为string放入容器中
+        }
+        for(int i = 1; i < str_num.size(); i++)
+        {
+            temp = str_num[i];
+            for(j = i-1; j >= 0; j--)
+            {
+                if(stol(temp + str_num[j]) > stol(str_num[j] + temp))
+                {
+                    str_num[j+1] = str_num[j];
+                }
+                else
+                {
+                    break;
+                }
+            }
+            str_num[j+1] = temp;
+        }
+        for(int a = 0; a < str_num.size(); a++)
+        {
+            result += str_num[a];    //输入结果
+        }
+        //下面主要是防止输出的结果开头含有0，消去这些0
+        for(string::iterator b = result.begin(); b != result.end(); b++)
+        {
+            if((*b) == '0' && (b + 1) != result.end()) //(b + 1) != result.end()主要是防止输入为0这样的极端情况出现，用来判断后面还有数字，是  否是最后一个0
+            {
+                result.erase(b);
+                b--;  //由于容器在删除后失效，重新从0开始排序，所以b也要跟着变化
+            }
+            else
+            {
+                break;
+            }
+        }
+        
+        return result;
+    }    
+};
