@@ -1,0 +1,147 @@
+The set [1,2,3,…,n] contains a total of n! unique permutations.
+
+By listing and labeling all of the permutations in order,
+We get the following sequence (ie, for n = 3):
+
+"123"
+"132"
+"213"
+"231"
+"312"
+"321"
+Given n and k, return the kth permutation sequence.
+
+Note: Given n will be between 1 and 9 inclusive.
+
+本题思路：一开始我是想将全部的排列找出，然后利用快速排序的核心函数找出第k个大小的字符串（其中比较是通过字符串内字符大小依次比较）
+可是这样做有一个很大的问题就是内存所需太大，空间复杂度太高。这种思路代码如下：
+class Solution {
+public:
+    string getPermutation(int n, int k) {
+        vector<string> restore;
+        string init_permutation;
+        for(int i = 1; i <= n; i++)
+            init_permutation.push_back('0' + i);
+        all_permutations(restore, init_permutation, n, 0);
+        unsigned int begin = 0;
+        unsigned int end = restore.size()-1;
+        unsigned int compare_k = parti(restore, begin, end);
+        while(compare_k != k-1)
+        {
+            if(compare_k < k-1)
+            {
+                begin = compare_k+1;
+                compare_k = parti(restore, begin, end);     
+            }
+            else
+            {
+                end = compare_k-1;
+                compare_k = parti(restore, begin, end); 
+            }
+        }
+        return restore[k-1];
+    }
+private:
+    void all_permutations(vector<string> &restore, string &permutation, int n, int begin)
+    {
+        if(begin == n-1)
+        {
+            restore.push_back(permutation);
+            return;
+        }
+        for(int i = begin; i < n; i++)
+        {
+            swap(permutation, begin, i);
+            all_permutations(restore, permutation, n, begin+1);
+            swap(permutation, begin, i);
+        }
+    }
+    void swap(string &permutation, int begin, int i)
+    {
+        char temp = permutation[begin];
+        permutation[begin] = permutation[i];
+        permutation[i] = temp;
+    }
+    unsigned int parti(vector<string> &restore, unsigned int begin, unsigned int end)
+    {
+        string shuzhi = restore[end]; // 此处选择第一个数字还可以再优化
+        while(begin < end)
+        {
+            while(string_compare(restore[begin], shuzhi) && begin < end)
+                begin++;
+            restore[end] = restore[begin];
+            while(!string_compare(restore[end], shuzhi) && begin < end)
+                end--;
+            restore[begin] = restore[end];
+        }
+        restore[begin] = shuzhi;
+        return begin;
+    }
+    bool string_compare(const string &first, const string &end)
+    {
+        unsigned int length = first.size();
+        for(unsigned int i = 0; i < length; i++)
+        {
+            int fir_num = first[i] - '0';
+            int end_num = end[i] - '0';
+            if(fir_num != end_num)
+            {
+                if(fir_num < end_num)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        return false; //由于任何排列不会相等，所以这句话基本没用
+    }
+};
+
+接着我观察排列的规律，发现查找第k个大小的字符串其实是类似于字典查找的。我们可以一个字符一个字符的查找，比如查找第一个字符，
+此时每个数字有（n-1）！排列，比较看k在第几个个区间中，然后添加该数字对应的容器中的字符（一开始需要从小到大将所有数字如1234放在容器中），
+添加完后在容器中删除该数字，后面的字符同上操作。代码如下：
+class Solution {
+public:
+    string getPermutation(int n, int k) {
+        long num = 1;
+        long begin = 0;
+        long end = 0;
+        string sorted_permutation;
+        string result;
+        for(int i = 1; i <= n; i++)
+        {
+            sorted_permutation.push_back('0' + i); //从小到大放入1234....
+        }
+        for(int i = n-1; i > 0; i--)
+        {
+            for(int j = 0; j < i+1; j++)
+            {
+                begin = num+j*jiechen(i);
+                end = begin+jiechen(i)-1;
+                if(k >= begin && k <= end)
+                {
+                    num = begin;  //千万不要写成num += begin，
+                    result.push_back(sorted_permutation[j]);  //往结果中加入容器中对应的字符
+                    sorted_permutation.erase(j,1); //删除相应字符
+                    break;
+                }
+            }
+        }
+        result.push_back(sorted_permutation[0]);
+        return result;
+    }
+private:
+    long jiechen(int n) //返回n！阶层的大小
+    {
+       long result = 1;
+       for(int j = n; j > 1; j--)
+       {
+          result *= j;  
+       }
+       return result;
+    }
+};
+优化另外参考http://blog.csdn.net/lqcsp/article/details/23322951，即求区间的时候利用除法就可以，不需要像上面那么繁琐
