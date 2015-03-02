@@ -1,0 +1,49 @@
+Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
+
+push(x) -- Push element x onto stack.
+pop() -- Removes the element on top of the stack.
+top() -- Get the top element.
+getMin() -- Retrieve the minimum element in the stack.
+
+参考：http://blog.csdn.net/sun20082567/article/details/41074835
+本题思路：一开始是使用添加一个辅助栈的方法，但是会出现Memory Limit Exceeded（消耗了2倍的空间）的问题。
+后来改进，即只在比辅助栈上的值小或者等于（防止同一小数字多次出现）的时候才往辅助栈添加元素，删除时候只有当两个堆栈顶端值相等时删除。
+代码如下：
+class MinStack {
+public:
+    void push(int x) {
+        normal_stack.push(x);
+        if(min_stack.size() == 0 || x <= min_stack.top())
+        {
+            min_stack.push(x);
+        }
+    }
+
+    void pop() {
+        if(normal_stack.size() && min_stack.size())
+        {
+            if(min_stack.top() == normal_stack.top())
+                min_stack.pop(); 
+            normal_stack.pop(); //注意要在对比过min_stack.top()和normal_stack.top()再写这句，否则比较会出错
+            return;
+        }
+        return;
+    }
+
+    int top() {
+        if(normal_stack.size())
+        {
+            return normal_stack.top();   
+        }
+    }
+
+    int getMin() {
+        if(min_stack.size())
+        {
+            return min_stack.top();
+        }
+    }
+private:
+    stack<int> normal_stack;
+    stack<int> min_stack;
+};
