@@ -60,3 +60,4 @@ public:
         return dou_link;
     }
 };
+其他方法参考：http://www.cnblogs.com/springfor/p/3862030.html
