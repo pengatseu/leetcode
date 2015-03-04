@@ -1,0 +1,80 @@
+A linked list is given such that each node contains an additional random pointer which could point to any node in the list or null.
+
+Return a deep copy of the list.
+解题思路：参考剑指offer P150页
+代码如下：
+/**
+ * Definition for singly-linked list with a random pointer.
+ * struct RandomListNode {
+ *     int label;
+ *     RandomListNode *next, *random;
+ *     RandomListNode(int x) : label(x), next(NULL), random(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    RandomListNode *copyRandomList(RandomListNode *head) {
+        add_copy(head);
+        copy_random(head);
+        return split_link(head);
+    }
+private:
+    void add_copy(RandomListNode *head)
+    {
+        RandomListNode *cur_node = head;
+        while(cur_node != NULL)
+        {
+            RandomListNode *new_node = new RandomListNode(cur_node->label);
+            new_node->next = cur_node->next;
+            cur_node->next = new_node;
+            cur_node = new_node->next;
+        }
+        
+        return;
+    }
+    void copy_random(RandomListNode *head)
+    {
+        if(head == NULL)  return; //采取防御性编程，对于任何空指针引用其next这种情况都要避免，这是leetcode的要求
+        RandomListNode *node = head;
+        RandomListNode *copy_node = head->next; //如果不采取防御性编程，当head为空指针时，此节点在有些编译器中会乱指，
+                                               //而下句判断与此句并无关系，仍然可以正确运行。但是为了安全期间，还是避免使用空指针情况
+        while(node != NULL)   
+        {
+            if(node->random == NULL)
+            {
+                copy_node->random = NULL; 
+            }
+            else
+            {
+                copy_node->random = node->random->next;  
+            }
+            node = copy_node->next;
+            if(node != NULL)  //采取防御性编程，对于任何空指针引用其next这种情况都要避免
+            {
+                copy_node = node->next;
+            }
+        }
+        
+        return;
+    }
+    RandomListNode *split_link(RandomListNode *head)
+    {
+        if(head == NULL || head->next == NULL)
+            return head;
+        RandomListNode *odd_node = head;
+        RandomListNode *dou_node = head->next;
+        RandomListNode *result = dou_node;
+        odd_node->next = dou_node->next;
+        odd_node = dou_node->next;
+        while(odd_node != NULL)
+        {
+            dou_node->next = odd_node->next;
+            dou_node = odd_node->next;
+            odd_node->next = dou_node->next;  //由于这里链表中的节点一定是偶数个，所以不需要考虑链表节点为奇数的情况。
+                                            // 可以对比Swap Nodes in Pairs中这种函数的写法。（本题剑指上面有原题）
+            odd_node = dou_node->next;
+        }
+        
+        return result;
+    }
+};
