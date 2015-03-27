@@ -1,0 +1,62 @@
+Given a singly linked list L: L0→L1→…→Ln-1→Ln,
+reorder it to: L0→Ln→L1→Ln-1→L2→Ln-2→…
+
+You must do this in-place without altering the nodes' values.
+
+For example,
+Given {1,2,3,4}, reorder it to {1,4,2,3}.
+
+本题思路：观察本题可发现是将后面的n/2个节点逆序插入前面n/2个节点的链表，逆序可以使用stack栈。所以本题首先将后面的一半节点
+放入到栈中，然后在插入到前面的一半节点的链表中。
+代码如下：
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    void reorderList(ListNode *head) {
+        if(head == NULL || head->next == NULL) return;
+        ListNode *node = head;
+        ListNode *node_temp = head;
+        stack<ListNode*> temp_back;
+        int n = 0;
+        while(node_temp != NULL)
+        {
+            n++;
+            node_temp = node_temp->next;
+        }
+        int stack_begin = (n+1)/2;
+        node_temp = head;
+        for(int i = 1; i < stack_begin; i++)
+        {
+            node_temp = node_temp->next;   
+        }
+        
+        ListNode* node_temp_temp = node_temp;  //此处三行是将前一半节点链表的最后一个节点指向NULL
+        node_temp = node_temp->next;
+        node_temp_temp->next = NULL;
+        
+        while(node_temp != NULL)
+        {
+            temp_back.push(node_temp);
+            node_temp = node_temp->next;
+        }
+        
+        while(!temp_back.empty())
+        {
+            ListNode* temp = node->next;
+            ListNode* stack_pop = temp_back.top();
+            stack_pop->next = node->next;
+            node->next = stack_pop;
+            node = temp;
+            temp_back.pop();
+        }
+        
+        return;
+    }
+};
