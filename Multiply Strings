@@ -1,0 +1,45 @@
+Given two numbers represented as strings, return multiplication of the numbers as a string.
+
+Note: The numbers can be arbitrarily large and are non-negative.
+
+思路参考：https://leetcodenotes.wordpress.com/2013/10/20/leetcode-multiply-strings-%E5%A4%A7%E6%95%B4%E6%95%B0%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B9%98%E6%B3%95/
+代码如下：
+class Solution {
+public:
+    string multiply(string num1, string num2) {
+        int *jiafa = new int[num1.size()+num2.size()]();
+        for(int i = 0; i < num1.size(); i++)
+        {
+            int a = num1[i] - '0';
+            for(int j = 0; j < num2.size(); j++)
+            {
+                int b = num2[j] - '0';
+                jiafa[(num1.size()-i)+(num2.size()-j)-2] += a*b;
+            }
+        }
+        string result;
+        for(int k = 0; k < num1.size()+num2.size(); k++)
+        {
+            int num = jiafa[k] % 10;  //实际要存储的数
+            int jinwei = jiafa[k]/10;  //进位
+            result.insert(0,1,num + '0');  //注意int型转化为char型时是反过来的，num+‘0’
+            if(k < num1.size()+num2.size()-1)  //保证数组下标没有越界！！！
+                jiafa[k+1] += jinwei;
+        }
+        for(string::iterator t = result.begin(); t != result.end();)
+        {
+            if(*t == '0')
+            {
+                t = result.erase(t);  //迭代器失效问题
+            }
+            else
+            {
+                break;
+            }
+        }
+        delete [] jiafa;
+        if(result.size() == 0)
+            result = "0";
+        return result;
+    }
+};
