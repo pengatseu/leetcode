@@ -1,0 +1,40 @@
+Given a binary tree, find its minimum depth.
+
+The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.
+
+思路：一开始我是想在find_all_path中使用min的引用来存储最小的depth的，但是这里有一个问题，就是调用函数时，min的初始值为多少。
+如果取的值比树中minimum depth还要小，则答案就不对了。所以更好的办法是直接使函数返回minimum depth，而不是当做形参。
+代码如下：/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int minDepth(TreeNode *root) {
+        
+        return find_all_path(root, 1);
+    }
+    
+int find_all_path(TreeNode *root, int node_nums)
+{
+    if(root == NULL)
+    {
+        return 0;
+    }
+    if(root->left == NULL && root->right == NULL)
+    {
+      //  if(min > node_nums) min = node_nums;
+        return node_nums;
+    }
+    int a = find_all_path(root->left, node_nums+1);
+    int b = find_all_path(root->right, node_nums+1);
+    if(a == 0) return b;  //防止遇到root == NULL的情况
+    if(b == 0) return a;  //同上
+    return min(a,b);
+}
+};
