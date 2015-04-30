@@ -1,0 +1,24 @@
+
+
+初始思路：使用递归来实现许多次迭代，每次给定一个目标，在数组中从头开始寻找该目标，找到以后让该目标的索引作为下一个目标数。
+初始的目标为数组的尾端索引。时间复杂度比较高。
+class Solution {
+public:
+    int jump(vector<int>& nums) {
+        int goal = nums.size()-1;
+        int count = 0;
+        jump_num(nums, goal, count);
+        return count;
+    }
+    void jump_num(vector<int>& nums, int goal, int& count)
+    {
+        for(int i = 0; i < goal; ++i)
+        {
+            if((nums[i]+i)>=goal)
+            {
+                jump_num(nums, i, ++count);
+                break;
+            }
+        }
+    }
+};
