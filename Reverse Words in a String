@@ -1,0 +1,126 @@
+Given an input string, reverse the string word by word.
+
+For example,
+Given s = "the sky is blue",
+return "blue is sky the".
+
+Update (2015-02-12):
+For C programmers: Try to solve it in-place in O(1) space.
+
+Clarification:
+What constitutes a word?
+A sequence of non-space characters constitutes a word.
+Could the input string contain leading or trailing spaces?
+Yes. However, your reversed string should not contain leading or trailing spaces.
+How about multiple spaces between two words?
+Reduce them to a single space in the reversed string.
+
+本题思路：这个题目我看了一下my submission，做过两遍。第一次做是4个月前，那时是使用stl库做的，使用的内存空间高，方法简单描述一下：
+分配两个内存，一个用来存储临时单词，一个是string 的stack，根据空格寻找单词，找到就存入到一个stack中，并且注意最后一个单词可能
+存入或者没存入stack中，所以要单独判断一下。接下来将stack中的单词依次取出放回，注意每个单词后面加上一个' ',并且由于最后一个单词
+不需要加空格，所以需要单独判断一下。另外就是需要考虑字符全为空的特殊情况。
+代码如下：
+class Solution {
+public:
+    void reverseWords(string &s) {
+    stack<string> words;
+    string temp;
+    for(int i = 0; i != s.size(); i++)
+    {
+        if(s[i] != ' ')
+        {
+            temp += s[i];
+        }
+        else
+        {
+            if(!temp.empty())
+            words.push(temp);
+            temp = "";
+        }
+    }
+    if(!temp.empty())
+    words.push(temp);
+    s = "";
+    while(words.size() > 1)
+    {
+        s.append(words.top());
+        s.push_back(' ');
+        words.pop();
+    }
+    if(words.empty())
+    {
+        s = "";
+    }
+    else
+    {
+        s.append(words.top());
+    
+    }    
+    }
+};
+
+最近又将这条题目重新做了一遍。这次使用的思路类似于Rotate Array中的思路和剑指offer上的思路，就是从数组两端开始交换字符。具体可参考
+它们的思路。这里的由于就是在该数组本身上进行操作，没有分配型的空间，所以空间复杂度降低了。但是在处理一些细节的时候很烦，
+如单词之间有多个空格，字符串首位都有空格的情况。另外由于字符串可能全部都是空格，所以这个特殊情况还要单独考虑。
+代码如下：
+class Solution {
+public:
+    void reverseWords(string &s) {
+        
+        int count = 0;  //这里是单独考虑字符串全是空格情况，conut记录字符串中空格数，如果等于字符串大小，这进行特殊处理后返回
+        for(int i = 0; i < s.size(); ++i)
+        {
+            if(s[i] == ' ') ++count;
+        }
+        if(count == s.size())
+        {
+            s = "";
+            return;
+        }
+        
+        reverse(s, 0, s.size()-1);  //先对字符串进行一次首位交换
+        int begin = 0, end = 0;
+        for(int i = 0; i < s.size();)  //这里不要加上++i，参考下面注释
+        {
+            if(s[begin] == ' ') //如果begin指向空格，则删除该空格，切记删除后后面的索引就是当前索引，所以不需要++i
+            {
+                s.erase(begin,1); //注意erase函数的正确使用，不要写成s.erase(begin)，这表明从begin开始全部删除
+                continue;
+            }
+            if(s[i] == ' ')  //寻找单词的尾端，并首位交换该单词
+            {
+                end = i-1;
+                reverse(s, begin, end);
+                begin = i + 1;
+            }
+            ++i;  //!!!!  ++i放在这里
+        }
+        
+        if(s[s.size()-1] == ' ')    //由于最后一个单词后面可能有空格，也可能没有空格，需要单独处理
+        {
+            while(s[s.size()-1] == ' ')  //防止最后一个单词后面有多个空格，将这多个空格都删除
+            {
+                s.erase(s.size()-1,1);
+            }
+        }
+        else
+        {
+            reverse(s, begin, s.size()-1);  //最后一个单词后面没有空格。说明最后一个单词未翻转，需要翻转一下
+        }
+        
+        return;
+    }
+    void reverse(string &s, int begin, int end)  //核心函数，与Rotate Array很像
+    {
+        while(begin < end)
+        {
+            swap(s[begin++], s[end--]);
+        }
+    }
+    void swap(char& a, char& b)
+    {
+        char temp = a;
+        a = b;
+        b = temp;
+    }
+};
