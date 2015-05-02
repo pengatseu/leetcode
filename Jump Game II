@@ -1,4 +1,13 @@
+Given an array of non-negative integers, you are initially positioned at the first index of the array.
 
+Each element in the array represents your maximum jump length at that position.
+
+Your goal is to reach the last index in the minimum number of jumps.
+
+For example:
+Given array A = [2,3,1,1,4]
+
+The minimum number of jumps to reach the last index is 2. (Jump 1 step from index 0 to 1, then 3 steps to the last index.)
 
 初始思路：使用递归来实现许多次迭代，每次给定一个目标，在数组中从头开始寻找该目标，找到以后让该目标的索引作为下一个目标数。
 初始的目标为数组的尾端索引。时间复杂度比较高。
@@ -20,5 +29,33 @@ public:
                 break;
             }
         }
+    }
+};
+
+后来参考：http://blog.csdn.net/linhuanmars/article/details/21356187
+仍然是局部最优和全局最优解法，主要需要两个变量，一个用来保存最大能到达的位置，另外一个保存最近的最大能达到位置，
+一旦当最近的最大能达到位置不能到达某个位置，则更新其值，并给step加1.
+
+代码如下：
+class Solution {
+public:
+    int jump(vector<int>& nums) {
+        int reach = 0;  //可以初始化为nums[0]，只要保证其他变量初始化不变。在i=0时其实或给reach复制为nums[0]
+        int lastreach = 0;
+        int count = 0;
+        for(int i = 0; i <= reach && i < nums.size(); ++i)
+        {
+            if(i > lastreach) //不能写成>=，一定要在上次的最大到达位置已经不能到达该位置再更新，当i=lastreach时，还是可以到达的
+            {
+                ++count;  //增加步数
+                lastreach = reach;  //更新最近的最大能到达位置
+            }
+            if(reach < (nums[i]+i))
+            {
+                reach = nums[i] + i; 更新最大能到达位置
+            }
+        }
+        if(reach < nums.size()-1) return 0;  //如果不能跳到数组末端，返回0
+        return count;
     }
 };
