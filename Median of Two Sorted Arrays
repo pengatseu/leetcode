@@ -1,0 +1,83 @@
+There are two sorted arrays nums1 and nums2 of size m and n respectively. Find the median of the two sorted arrays. 
+The overall run time complexity should be O(log (m+n)).
+
+这是今天做到的一个好题。由于参考的比较多，所以自己将思路整理的一下，思路如下：
+题目让求解两个排好序的数组的中位数。假设总数为C，如果C是奇数，那么返回位于正中央的那个数即可（index是(C-1)/2)；
+如果是偶数，那么要返回中间两个数的平均数，也就是下标是(C-1)/2和(C-1)/2 + 1的两个数的平均数。
+方案一、用merge sort的思路排序，将两个数组合并到第三个数组中，在找到中位数即可。显然我们有用O(n)时间和O(n)空间，不满足要求。
+方案二、我们可以不需要合并数组，我们可以仿照这个合并数组的过程。我们可以使用一个计数器m，仍然按照合并数组的方法
+，使用两个指针pA和pB，分别指向A和B数组的第一个元素。使用类似于merge sort的原理，如果数组A当前元素小，那么pA++，同时m++。
+如果数组B当前元素小，那么pB++，同时m++。最终当m等于k的时候，就得到了我们的答案——O(k)时间，O(1)空间。
+方案二其实也是一个不错的解法，但是还有更好的解法，但是也更复杂。
+
+方案三、该题目可以从求中位数推广到求两个有序数组的第k个数字。
+首先数组A和B的元素个数都大于k/2，我们比较A[k/2-1]和B[k/2-1]两个元素，这两个元素分别表示A的第k/2小的元素和B的第k/2小的元素。
+这两个元素比较共有三种情况：>、<和=。如果A[k/2-1]<B[k/2-1]，这表示A[0]到A[k/2-1]的元素都在A和B合并之后的前k小的元素中。
+换句话说，A[k/2-1]不可能大于两数组合并之后的第k小值，所以我们可以将其抛弃。
+当A[k/2-1]>B[k/2-1]时存在类似的结论。
+当A[k/2-1]=B[k/2-1]时，我们已经找到了第k小的数，也即这个相等的元素，我们将其记为m。由于在A和B中分别有k/2-1个元素小于m
+，所以m即是第k小的数，返回这两个值中的任意一个都行。
+接下来进行递归，由于上面已经删除k/2（注意不是k/2-1）个，递归式中的k的值为删除后值的大小。同时被删除的数组长度也减小，
+数组的删除可以看是开始索引向后移动。具体参考代码。
+这样基本就差不多了，还需要考虑一些问题：
+1、递归的结束条件：由于该题的思想类似于二分法，所以最后一定是让k减小到1；或者在递归途中遇到A[k/2-1]=B[k/2-1]情况，直接返回
+2、数组的长度比k/2小：此时可以通过比较数组长度和k/2，取最小值。即int pa = min(k / 2, m), pb = k - pa，具体参考代码注释。
+3、由于两个数组的长度都变化，所以条件繁琐：开始的时候让A数组始终小于B数组(如果不是就调换)的方法。
+
+关于问题2，其实更本质的是这样的：如果A[ka-1] > B[kb-1]（ka+kb = k）说明在B前端的kb个数中，不可能出现我们要寻找的目标。
+最后,如果总数是基数个,那么就是中间那个, 如果 总数是偶数个,那么是中间两个数的和(记得int to double)除2，需要找两次.
+所以这个问题转换为查找两个排序数组的第K大的数.
+
+
+代码如下：
+class Solution {
+public:
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        int len = nums1.size()+nums2.size();
+        if(len & 0x1) //判断两个数组的和是奇数还是偶数
+        {
+            return k_path(nums1.begin(), nums1.size(), nums2.begin(), nums2.size(), len/2+1); //奇数情况取中间
+        }
+        else
+        {
+            return (k_path(nums1.begin(), nums1.size(), nums2.begin(), nums2.size(), len/2) + k_path(nums1.begin(), nums1.size(), nums2.begin(), nums2.size(), len/2+1))/2.0;
+        }
+    }
+    int k_path(vector<int>::iterator nums1, int m, vector<int>::iterator nums2, int n, int k)
+    {
+        if(m > n)  //始终让nums1长度小雨nums2长度，这样避免了多个判断条件，解决两个数组长度都不确定的问题，减少判断条件
+        return k_path(nums2, n, nums1, m, k);
+        if(m == 0)  //如果nums1或者nums2为空，则直接返回nums2[k-1]或者nums1[k-1]；注意这里由于上面条件（始终让nums1长度小雨nums2长度）所以只需要判断m等于0即可
+        return nums2[k-1]; //另外如果其中一个数组小于k/2,则在其下一次递归中也会进入该条件，即相当于将一个数组删除为空数组。
+        if(k == 1)  //最后递归结束的条件（除了中途遇到nums2[k-1] == nums1[k-1]）
+        return min(nums1[0], nums2[0]);
+        int pa = min(k/2,m), pb = k - pa;  //注意这里的取值要和最小长度m比较，防止出现k/2比数组长度大的情况。
+        if(nums1[pa-1] == nums2[pb-1])
+        {
+            return nums1[pa-1];  //随便返回其中一个数字
+        }
+        else if(nums1[pa-1] < nums2[pb-1])
+        {
+            return k_path(nums1+pa, m-pa, nums2, n, k-pa); //删除数组pa（不是pa-1，要包括指针所指的元素）个元素，数组长度也减小pa，另一个数组不变，k也减小pa
+        }
+        else
+        {
+            return k_path(nums1, m, nums2+pb, n-pb, k-pb);  //类似上面注释
+        }
+    }
+    int min(int a, int b)
+    {
+        if(a < b)
+        {
+            return a;
+        }
+        else
+        {
+            return b;
+        }
+    }
+};
+
+参考：http://blog.csdn.net/yutianzuijin/article/details/11499917
+http://blog.unieagle.net/2012/10/04/leetcode%E9%A2%98%E7%9B%AE%EF%BC%9Amedian-of-two-sorted-arrays/
+http://wp.javayu.me/2014/01/median_of_two_sorted_arrays/
