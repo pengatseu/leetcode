@@ -1,0 +1,42 @@
+Rotate an array of n elements to the right by k steps.
+
+For example, with n = 7 and k = 3, the array [1,2,3,4,5,6,7] is rotated to [5,6,7,1,2,3,4].
+
+Note:
+Try to come up as many solutions as you can, there are at least 3 different ways to solve this problem.
+
+[show hint]
+
+Related problem: Reverse Words in a String II
+
+Credits:
+Special thanks to @Freezen for adding this problem and creating all test cases.
+
+思路：参考剑指offer的42题，特别需要注意的是在在leetcode中，不能对同一变量交换，即变量a，swap(a,a)是不正确的。这样会引起runtime error
+还需要注意k可能大于n所以需要求余一下。
+
+代码如下：class Solution {
+public:
+    void rotate(int nums[], int n, int k) {
+        if(nums == NULL || n == 0) return;
+        k = k % n;  //注意点
+        rotate_core(nums, 0, n-1);
+        rotate_core(nums, 0, k-1);
+        rotate_core(nums, k, n-1);
+    }
+    void rotate_core(int nums[], int begin, int end)
+    {
+        while(begin < end)   
+        {
+            swap(nums[begin], nums[end]);
+            ++begin;
+            --end;
+        }
+    }
+    void swap(int& a, int& b)
+    {
+        int temp = a;
+        a = b;
+        b = temp;
+    }
+};
