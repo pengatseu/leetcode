@@ -1,0 +1,35 @@
+Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
+
+For example, given the array [−2,1,−3,4,−1,2,1,−5,4],
+the contiguous subarray [4,−1,2,1] has the largest sum = 6.
+
+思路：这道题的一般思路参考剑指offer的31题，另外参考http://blog.csdn.net/linhuanmars/article/details/21314059
+以上的那个链接给出了一个新的解题角度，”局部最优和全局最优解法“。具体参考上面的链接，这样思考能看透本题的本质。
+需要注意一些局部最优和全局最的初始话，参考下面注释。与此提类似的还有Jump Game 1和 Jump Game 2
+
+代码如下：
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        if(nums.empty()) return 0;
+        int sum = nums[0], max = nums[0];  //如果这样初始化，则i从1开始。如果sum = 0, max = nums[0];则i从0 开始，
+                                            //注意不能让max也为0，这样的话如果数组全部为负数，则得出的答案就是0，是错的了。
+        for(int i = 1; i < nums.size(); ++i)
+        {
+            if(sum <= 0)
+            {
+                sum = nums[i];
+            }
+            else
+            {
+                sum += nums[i];
+            }
+            
+            if(sum > max) 
+            {
+                max = sum;
+            }
+        }
+        return max;
+    }
+};
