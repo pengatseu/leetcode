@@ -1,4 +1,13 @@
+Given an array of non-negative integers, you are initially positioned at the first index of the array.
 
+Each element in the array represents your maximum jump length at that position.
+
+Determine if you are able to reach the last index.
+
+For example:
+A = [2,3,1,1,4], return true.
+
+A = [3,2,1,0,4], return false.
 
 
 一开始的思路：类似于动态规划，将所有的可能的跳跃方法列出来，但是时间复杂度很高。
@@ -20,5 +29,27 @@ public:
              if(result == true) return true;
         }
         return false;
+    }
+};
+
+参考了http://blog.csdn.net/linhuanmars/article/details/21354751，发现一个很重要的关键点，就是索引i就是跳到的位置，而A[i]+i则
+表示最远能跳到的位置。仍然使用了局部最优和全局最优解法的思想。一旦最远能跳到的位置小于一个索引，且该索引不是数组尾部索引，
+说明false
+代码如下：
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        if(nums.empty()) return false;
+        int reach = nums[0]; //reach全局最优，初始化为数组开头，这样i可以从1开始；或者reach = 0，i从0开始也行。一般后者更好。
+        for(int i = 1; i <= reach && i < nums.size(); ++i)  //如果不能跳到，则i会>reach，即最大能到达的位置不能到达索引i处。
+        {
+            if(reach < (nums[i]+i))
+            {
+                reach = nums[i] + i;   //更新最大能到达的位置
+            }
+        }
+        if(reach < nums.size()-1) return false;
+        
+        return true;
     }
 };
