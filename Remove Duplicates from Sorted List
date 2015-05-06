@@ -1,0 +1,39 @@
+Given a sorted linked list, delete all duplicates such that each element appear only once.
+
+For example,
+Given 1->1->2, return 1->2.
+Given 1->1->2->3->3, return 1->2->3.
+
+思路：与有序数组删除相同元素相似，注意，由于有序，同一数字的相同结果都会放在一起。思路具体参考Remove Duplicates from Sorted Array
+更好的代码参考:http://blog.csdn.net/linhuanmars/article/details/24354291
+
+我的代码：
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* deleteDuplicates(ListNode* head) {
+        if(head == NULL) return NULL;  //该情况需要单独判断
+        ListNode *current = head, *next = head;
+        while(next->next != NULL)  //不能用next!= NULL判断，因为如果next指向链表最后一个，则下一行代码会将next赋值为NULL，
+        {                          //接下来代码还回用到next->val，此时会有错误
+            next = next->next;
+            if(current->val != next->val)
+            {
+                current->next = next;
+                current = next;
+            }
+        }
+        if(current->next != NULL)  //判断最后是否有重复数，如果有重复，说明current肯定不等于next，如果尾端的数都不同，则current一定等于next
+        {
+            current->next = NULL;
+        }
+        return head;
+    }
+};
