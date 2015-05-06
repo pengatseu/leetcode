@@ -1,0 +1,77 @@
+Write a program to find the node at which the intersection of two singly linked lists begins.
+
+
+For example, the following two linked lists:
+
+A:          a1 → a2
+                   ↘
+                     c1 → c2 → c3
+                   ↗            
+B:     b1 → b2 → b3
+begin to intersect at node c1.
+
+
+Notes:
+
+If the two linked lists have no intersection at all, return null.
+The linked lists must retain their original structure after the function returns.
+You may assume there are no cycles anywhere in the entire linked structure.
+Your code should preferably run in O(n) time and use only O(1) memory.
+
+思路：参考剑指offer38题
+代码如下：
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        int num1 = 0, num2 = 0;
+        ListNode *temp1 = headA, *temp2 = headB;
+        while(temp1 != NULL)
+        {
+            temp1 = temp1->next;
+            ++num1;
+        }
+        while(temp2 != NULL)
+        {
+            temp2 = temp2->next;
+            ++num2;
+        }
+        int distance;
+        if(num1 >= num2)
+        {
+            distance = num1 - num2;
+            temp1 = headA;
+            temp2 = headB;
+        }
+        else
+        {
+            distance = num2 - num1;
+            temp1 = headB;
+            temp2 = headA;
+        }
+        while(distance--)
+        {
+            temp1 = temp1->next;
+        }
+        while(temp1 != NULL)
+        {
+            if(temp1 == temp2)
+            {
+                return temp1;
+            }
+            else
+            {
+                temp1 = temp1->next;
+                temp2 = temp2->next;
+            }
+        }
+        return NULL;
+    }
+};
