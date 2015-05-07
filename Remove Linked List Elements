@@ -1,0 +1,36 @@
+Remove all elements from a linked list of integers that have value val.
+
+Example
+Given: 1 --> 2 --> 6 --> 3 --> 4 --> 5 --> 6, val = 6
+Return: 1 --> 2 --> 3 --> 4 --> 5
+
+思路：两个指针，一个前一个后，遇到值相同的情况就让前一个指针的next指向后一个指针的next，注意加上一个头结点，防止开始的节点就
+符合条件。其核心处理的while循环与Remove Duplicates from Sorted List里面的相似。
+
+代码如下：
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* removeElements(ListNode* head, int val) {
+        ListNode *new_head = new ListNode(0);  //加个头节点，防止链表的开头就相同
+        new_head->next = head;
+        ListNode *current = new_head, *temp = head;
+        while(temp != NULL) {
+            if(temp->val != val) {
+                current = temp;
+            }
+            else {
+                current->next = temp->next;
+            }
+            temp = temp->next;
+        }
+        return new_head->next;  //返回的时候要注意不是返回new_head
+    }
+};
