@@ -45,3 +45,24 @@ public:
     return c;
     }
 };
+
+参考http://blog.csdn.net/linhuanmars/article/details/22365957
+class Solution {
+public:
+    vector<int> plusOne(vector<int>& digits) {
+        if(digits.size() == 0) return digits;
+        vector<int> result = digits;
+        int jw = 1; //很巧妙，一开始设为1，这样省去额外处理个位数烦恼
+        for(int count = result.size()-1; count >= 0; --count) {
+            result[count] += jw;
+            jw = result[count]/10;
+            result[count] %= 10;
+            if(jw == 0) return result;
+        }
+
+        result.insert(result.begin(),1);
+
+        
+        return result;
+    }
+};
